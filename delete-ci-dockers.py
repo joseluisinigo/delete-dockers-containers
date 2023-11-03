@@ -54,33 +54,33 @@ def limpiar_docker():
     subprocess.run(['sudo', 'docker', 'container', 'prune', '-f'])
     subprocess.run(['sudo', 'docker', 'builder', 'prune', '-f'])
 
-opciones_principales = ["Listar contenedores", "Eliminar contenedor por ID", "Listar imágenes", "Eliminar imagen por ID", "Listar y eliminar redes Docker", "Limpiar Docker"]
+opciones_principales = ["Listar y eliminar contenedores", "Listar y eliminar imágenes", "Listar y eliminar redes Docker", "Limpiar Docker"]
 while True:
     mostrar_menu_opciones(opciones_principales)
     opcion = input("Selecciona una opción: ")
     if opcion == '0':
         break
     elif opcion == '1':
-        listar_contenedores()
-    elif opcion == '2':
         contenedores = listar_contenedores()
-        opcion_contenedor = input("Selecciona el número del contenedor que deseas eliminar: ")
+        opcion_contenedor = input("Selecciona el número del contenedor que deseas eliminar (o 0 para cancelar): ")
         if opcion_contenedor.isdigit() and 1 <= int(opcion_contenedor) <= len(contenedores):
             eliminar_contenedor(contenedores[int(opcion_contenedor) - 1][0])
+        elif opcion_contenedor == '0':
+            print("Operación cancelada.")
+        else:
+            print("Opción no válida. Introduce un número válido.")
+    elif opcion == '2':
+        imagenes = listar_imagenes()
+        opcion_imagen = input("Selecciona el número de la imagen que deseas eliminar (o 0 para cancelar): ")
+        if opcion_imagen.isdigit() and 1 <= int(opcion_imagen) <= len(imagenes):
+            eliminar_imagen(imagenes[int(opcion_imagen) - 1][0])
+        elif opcion_imagen == '0':
+            print("Operación cancelada.")
         else:
             print("Opción no válida. Introduce un número válido.")
     elif opcion == '3':
-        listar_imagenes()
-    elif opcion == '4':
-        imagenes = listar_imagenes()
-        opcion_imagen = input("Selecciona el número de la imagen que deseas eliminar: ")
-        if opcion_imagen.isdigit() and 1 <= int(opcion_imagen) <= len(imagenes):
-            eliminar_imagen(imagenes[int(opcion_imagen) - 1][0])
-        else:
-            print("Opción no válida. Introduce un número válido.")
-    elif opcion == '5':
         listar_y_eliminar_redes()
-    elif opcion == '6':
+    elif opcion == '4':
         limpiar_docker()
     else:
         print("Opción no válida. Por favor, selecciona una opción válida.")
