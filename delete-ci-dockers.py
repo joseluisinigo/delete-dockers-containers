@@ -32,12 +32,29 @@ def listar_imagenes():
 def eliminar_imagen(id_imagen):
     subprocess.run(['sudo', 'docker', 'rmi', '-f', id_imagen])
 
+def listar_y_eliminar_redes():
+    output = subprocess.check_output(['sudo', 'docker', 'network', 'list', '--format', '{{.ID}}\t{{.Name}}'], text=True)
+    redes = [line.split('\t') for line in output.strip().split('\n')]
+    
+    print("Redes Docker disponibles:")
+    for i, (id_red, nombre_red) in enumerate(redes):
+        print(f"{i + 1}. ID: {id_red}, Nombre: {nombre_red}")
+
+    opcion_red = input("Selecciona el número de la red que deseas eliminar (o 0 para cancelar): ")
+    if opcion_red.isdigit() and 1 <= int(opcion_red) <= len(redes):
+        subprocess.run(['sudo', 'docker', 'network', 'rm', redes[int(opcion_red) - 1][1]])
+        print(f"Red {redes[int(opcion_red) - 1][1]} eliminada.")
+    elif opcion_red == '0':
+        print("Operación cancelada.")
+    else:
+        print("Opción no válida. Introduce un número válido.")
+
 def limpiar_docker():
     subprocess.run(['sudo', 'docker', 'image', 'prune', '-f'])
     subprocess.run(['sudo', 'docker', 'container', 'prune', '-f'])
     subprocess.run(['sudo', 'docker', 'builder', 'prune', '-f'])
 
-opciones_principales = ["Listar contenedores", "Eliminar contenedor por ID", "Listar imágenes", "Eliminar imagen por ID", "Limpiar Docker"]
+opciones_principales = ["Listar contenedores", "Eliminar contenedor por ID", "Listar imágenes", "Eliminar imagen por ID", "Listar y eliminar redes Docker", "Limpiar Docker"]
 while True:
     mostrar_menu_opciones(opciones_principales)
     opcion = input("Selecciona una opción: ")
@@ -62,6 +79,8 @@ while True:
         else:
             print("Opción no válida. Introduce un número válido.")
     elif opcion == '5':
+        listar_y_eliminar_redes()
+    elif opcion == '6':
         limpiar_docker()
     else:
         print("Opción no válida. Por favor, selecciona una opción válida.")
